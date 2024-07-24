@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { apiRequest } from './api';
 
 const AuthContext = createContext();
@@ -6,14 +6,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      fetchUser(token);
-    }
-  }, []);
-
-  const fetchUser = async (token) => {
+  const fetchUser = useCallback(async (token) => {
     try {
       const userData = await apiRequest('/user');
       setUser(userData);
@@ -21,7 +14,14 @@ export function AuthProvider({ children }) {
       console.error('Failed to fetch user data', error);
       logout();
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchUser(token);
+    }
+  }, [fetchUser]);
 
   const register = async (name, email, password) => {
     const data = await apiRequest('/register', 'POST', { name, email, password });
@@ -57,3 +57,4 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
