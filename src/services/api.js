@@ -1,4 +1,6 @@
-import { logError, displayErrorMessage } from './errorService';
+import { logError, displayErrorMessage } from './errorService'; 
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../firebase'; 
 
 const API_URL = 'http://localhost:3000/api';
 
@@ -33,4 +35,6 @@ export async function apiRequest(endpoint, method = 'GET', data = null, isFormDa
     throw error;
   }
 }
+
+
 

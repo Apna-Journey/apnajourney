@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { apiRequest } from './api';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase'; 
+import { apiRequest } from './api'; 
 
 const AuthContext = createContext();
 
@@ -24,9 +26,17 @@ export function AuthProvider({ children }) {
   }, [fetchUser]);
 
   const register = async (name, email, password) => {
-    const data = await apiRequest('/register', 'POST', { name, email, password });
-    // Don't set user or token yet, as the email is not verified
-    return data;
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      const data = await apiRequest('/register', 'POST', { name, email, uid: user.uid });
+      
+      return data;
+    } catch (error) {
+      console.error('Error signing up:', error);
+      throw error;
+    }
   };
 
   const verifyEmail = async (token) => {
@@ -37,9 +47,17 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (email, password) => {
-    const data = await apiRequest('/login', 'POST', { email, password });
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      const data = await apiRequest('/login', 'POST', { email, uid: user.uid });
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+    } catch (error) {
+      console.error('Error logging in:', error);
+      throw error;
+    }
   };
 
   const logout = () => {
@@ -57,4 +75,8 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+
+
+
 

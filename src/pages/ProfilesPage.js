@@ -45,7 +45,7 @@ function ProfilesPage() {
         <option value="rating">Rating</option>
         <option value="createdAt">Date Created</option>
       </select>
-      <Link to="/create-profile">Create New Profile</Link>
+
       {profiles.map(profile => (
         <div key={profile._id}>
           <h2>{profile.name}</h2>
@@ -53,15 +53,24 @@ function ProfilesPage() {
           <Link to={`/profiles/${profile._id}`}>View Details</Link>
         </div>
       ))}
+      
       <div>
         <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}>Previous</button>
         <span>Page {page} of {totalPages}</span>
         <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}>Next</button>
+      </div>
+      
+      <div>
+        <Link to="/">
+          <button>Create Profile</button>
+        </Link>
       </div>
     </div>
   );
 }
 
 export default ProfilesPage;
+
+
 
 
