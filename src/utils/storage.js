@@ -1,16 +1,17 @@
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { storage } from '../firebase'; 
+import { apiRequest } from '../services/api'; // Adjusted import path
 
 async function uploadFile(file) {
     try {
-        const storageRef = ref(storage, `files/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        console.log('File available at', url);
-        return url; 
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const response = await apiRequest('/upload', 'POST', formData, true); // Assuming your endpoint is /upload
+
+        console.log('File available at', response.data.url);
+        return response.data.url;
     } catch (error) {
         console.error('Error uploading file:', error);
-        throw error; 
+        throw error;
     }
 }
 
@@ -22,4 +23,3 @@ const handleFileUpload = (event) => {
 };
 
 export { handleFileUpload };
-

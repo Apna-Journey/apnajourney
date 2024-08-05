@@ -1,10 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { doc, getDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '../firebase';
 import { generatePDF } from '../utils/pdfGenerator';
+import { apiRequest } from '../services/api'; 
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
+import { storage } from '../firebase'; // Adjust the import path as necessary
 
 const PreviewProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -14,10 +13,9 @@ const PreviewProfilePage = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const docRef = doc(db, 'profiles', id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProfile({ id: docSnap.id, ...docSnap.data() });
+        const response = await apiRequest(`/profiles/${id}`, 'GET');
+        if (response) {
+          setProfile(response.data);
         } else {
           console.log('No such document!');
         }
@@ -66,6 +64,7 @@ const PreviewProfilePage = () => {
           <p><strong>Employees:</strong> {profile.employees}</p>
           <p><strong>Website:</strong> <a href={profile.website} target="_blank" rel="noopener noreferrer">{profile.website}</a></p>
           <p><strong>Location:</strong> {profile.location}</p>
+          {profile.logo && <img src={profile.logo} alt="Logo" width="100" />}
         </div>
       </div>
       <div className="mt-3">
@@ -73,6 +72,7 @@ const PreviewProfilePage = () => {
         <button className="btn btn-success" onClick={handleSavePDFToFirebase}>Save PDF to Firebase</button>
       </div>
       <button className="btn btn-secondary mt-3" onClick={() => navigate('/profiles')}>Back to Profiles</button>
+      <button className="btn btn-primary mt-3" onClick={() => navigate('/edit-profile')}>Edit Profile</button>
     </div>
   );
 };

@@ -1,36 +1,42 @@
 import React, { useState } from 'react';
 import { apiRequest } from '../services/api';
 
-function ForgotPasswordPage() {
+const ForgotPasswordPage = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await apiRequest('/forgot-password', 'POST', { email });
-      setMessage('Password reset link sent to your email.');
+      await apiRequest('/auth/forgot-password', 'POST', { email });
+      setMessage('Check your email for the password reset link.');
     } catch (error) {
+      console.error('Error sending reset link:', error);
       setMessage('Failed to send reset link. Please try again.');
     }
   };
 
   return (
-    <div>
+    <div className="container mt-5">
       <h1>Forgot Password</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          required
-        />
-        <button type="submit">Send Reset Link</button>
+        <div className="mb-3">
+          <label htmlFor="email" className="form-label">Email:</label>
+          <input 
+            type="email" 
+            className="form-control" 
+            id="email" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            placeholder="Enter your email" 
+            required 
+          />
+        </div>
+        <button type="submit" className="btn btn-primary">Send Reset Link</button>
       </form>
       {message && <p>{message}</p>}
     </div>
   );
-}
+};
 
 export default ForgotPasswordPage;

@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { collection, addDoc } from 'firebase/firestore';
-import { db } from '../firebase';
 import { apiRequest } from '../services/api';
 
 const CreateProfilePage = () => {
@@ -25,6 +23,10 @@ const CreateProfilePage = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    setLogo(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
@@ -40,17 +42,10 @@ const CreateProfilePage = () => {
     }
 
     try {
-      // Store profile details in Firestore
-      const docRef = await addDoc(collection(db, 'profiles'), {
-        ...profile,
-        createdAt: new Date()
-      });
-
-      // Upload the logo file or handle other file uploads via API
+      // Upload the profile data and file
       await apiRequest('/profiles', 'POST', formData, true);
-
       // Navigate to the profile preview page
-      navigate(`/preview-profile/${docRef.id}`);
+      navigate('/preview-profile');
     } catch (error) {
       console.error('Error creating profile:', error);
       alert('Failed to create profile. Please try again.');
@@ -147,7 +142,7 @@ const CreateProfilePage = () => {
             className="form-control" 
             id="logo" 
             name="logo" 
-            onChange={(e) => setLogo(e.target.files[0])} 
+            onChange={handleFileChange} 
           />
         </div>
         <button type="submit" className="btn btn-primary">Create Profile</button>
@@ -157,4 +152,3 @@ const CreateProfilePage = () => {
 };
 
 export default CreateProfilePage;
-

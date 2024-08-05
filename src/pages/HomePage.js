@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import SEO from '../components/SEO';
 import { apiRequest } from '../services/api';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
-function HomePage() {
-  const { t } = useTranslation(); 
+const HomePage = () => {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [industry, setIndustry] = useState('');
   const [description, setDescription] = useState('');
@@ -37,10 +37,10 @@ function HomePage() {
 
     try {
       const response = await apiRequest('/profiles', 'POST', formData, true);
-      setProfileId(response.id); // Assuming the API response contains the new profile ID
+      setProfileId(response.id);
       navigate('/profiles');
     } catch (error) {
-      alert(t('profileCreationError')); 
+      alert(t('profileCreationError'));
     }
   };
 
@@ -53,8 +53,8 @@ function HomePage() {
   };
 
   return (
-    <div>
-      <SEO 
+    <div className="container mt-5">
+      <SEO
         title={t('homeTitle')}
         description={t('homeDescription')}
         keywords={t('homeKeywords')}
@@ -100,7 +100,7 @@ function HomePage() {
             onChange={(date) => setFoundedYear(date)}
             showYearPicker
             dateFormat="yyyy"
-            placeholderText="Select year"
+            placeholderText={t('Select year')}
           />
         </div>
         <div>
@@ -110,7 +110,7 @@ function HomePage() {
             id="employees"
             value={employees}
             onChange={(e) => setEmployees(e.target.value)}
-            placeholder="Enter number"
+            placeholder={t('Enter number')}
             min="1"
             required
           />
@@ -147,13 +147,12 @@ function HomePage() {
       </form>
 
       <button onClick={handlePreview}>{t('Preview')}</button>
+
+      <h2>{t('quickLinks')}</h2>
+      <Link to="/login" className="btn btn-primary">{t('Login')}</Link>
+      <Link to="/register" className="btn btn-secondary">{t('Register')}</Link>
     </div>
   );
 }
 
 export default HomePage;
-
-
-
-
-

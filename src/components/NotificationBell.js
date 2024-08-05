@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getNotifications, markNotificationAsRead } from '../services/notificationService';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
 
 function NotificationBell() {
+  const { t } = useTranslation(); // Hook to use translations
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
@@ -20,7 +24,9 @@ function NotificationBell() {
 
   return (
     <div>
-      <span>🔔 ({notifications.filter(n => !n.read).length})</span>
+      <span>
+        <FontAwesomeIcon icon={faBell} /> {t('notifications')} ({notifications.filter(n => !n.read).length})
+      </span>
       <ul>
         {notifications.map(notification => (
           <li key={notification._id} onClick={() => handleNotificationClick(notification._id)}>
@@ -33,3 +39,4 @@ function NotificationBell() {
 }
 
 export default NotificationBell;
+

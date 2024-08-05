@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next'; // Import translation hook
 import { apiRequest } from '../services/api';
 
 function ReviewForm({ profileId, onReviewAdded }) {
+  const { t } = useTranslation(); // Hook to use translations
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
 
@@ -21,16 +23,16 @@ function ReviewForm({ profileId, onReviewAdded }) {
     <form onSubmit={handleSubmit}>
       <select value={rating} onChange={(e) => setRating(Number(e.target.value))}>
         {[1, 2, 3, 4, 5].map(num => (
-          <option key={num} value={num}>{num} Stars</option>
+          <option key={num} value={num}>{num} {t('stars')}</option>
         ))}
       </select>
       <textarea 
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        placeholder="Write your review here"
+        placeholder={t('writeReview')}
         required
       />
-      <button type="submit">Submit Review</button>
+      <button type="submit">{t('submitReview')}</button>
     </form>
   );
 }

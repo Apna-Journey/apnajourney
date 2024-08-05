@@ -1,7 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebase'; 
-import { apiRequest } from './api'; 
+import { apiRequest } from './api';
 
 const AuthContext = createContext();
 
@@ -10,10 +8,12 @@ export function AuthProvider({ children }) {
 
   const fetchUser = useCallback(async (token) => {
     try {
+      console.log('Fetching user data with token:', token);
       const userData = await apiRequest('/user');
       setUser(userData);
+      console.log('User data fetched successfully:', userData);
     } catch (error) {
-      console.error('Failed to fetch user data', error);
+      console.error('Failed to fetch user data:', error);
       logout();
     }
   }, []);
@@ -27,11 +27,9 @@ export function AuthProvider({ children }) {
 
   const register = async (name, email, password) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      const data = await apiRequest('/register', 'POST', { name, email, uid: user.uid });
-      
+      console.log('Registering user with email:', email);
+      const data = await apiRequest('/register', 'POST', { name, email, password });
+      console.log('User registered with backend:', data);
       return data;
     } catch (error) {
       console.error('Error signing up:', error);
@@ -40,18 +38,24 @@ export function AuthProvider({ children }) {
   };
 
   const verifyEmail = async (token) => {
-    const data = await apiRequest('/verify-email', 'POST', { token });
-    localStorage.setItem('token', data.token);
-    setUser(data.user);
-    return data.user;
+    try {
+      console.log('Verifying email with token:', token);
+      const data = await apiRequest('/verify-email', 'POST', { token });
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+      console.log('Email verified and user set:', data.user);
+      return data.user;
+    } catch (error) {
+      console.error('Error verifying email:', error);
+      throw error;
+    }
   };
 
   const login = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      
-      const data = await apiRequest('/login', 'POST', { email, uid: user.uid });
+      console.log('Logging in with email:', email);
+      const data = await apiRequest('/login', 'POST', { email, password });
+      console.log('User logged in with backend:', data);
       localStorage.setItem('token', data.token);
       setUser(data.user);
     } catch (error) {
@@ -61,6 +65,7 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    console.log('Logging out user');
     localStorage.removeItem('token');
     setUser(null);
   };
@@ -75,8 +80,3 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
-
-
-
-
-
