@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { generatePDF } from '../utils/pdfGenerator';
 import { apiRequest } from '../services/api'; 
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'; 
-import { storage } from '../firebase'; // Adjust the import path as necessary
+
 
 const PreviewProfilePage = () => {
   const [profile, setProfile] = useState(null);
@@ -39,7 +39,7 @@ const PreviewProfilePage = () => {
   const handleSavePDFToFirebase = async () => {
     try {
       const pdfBlob = await generatePDF(profile);
-      const storageRef = ref(storage, `profiles/${profile.id}.pdf`);
+      const storageRef = ref(`profiles/${profile.id}.pdf`);
       await uploadBytes(storageRef, pdfBlob);
       const downloadURL = await getDownloadURL(storageRef);
       console.log('PDF saved to Firebase Storage:', downloadURL);

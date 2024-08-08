@@ -18,7 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors());
@@ -29,7 +29,7 @@ app.use(express.urlencoded({ extended: true }));
 const upload = multer({ dest: 'uploads/' });
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/your-db-name', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect('mongodb://localhost:27017/Apna Journey', { useNewUrlParser: true, useUnifiedTopology: true });
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -119,3 +119,4 @@ app.get('/api/profiles/:id', async (req, res) => {
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
+

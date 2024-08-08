@@ -148,8 +148,9 @@ const HomePage = () => {
 
       <button onClick={handlePreview}>{t('Preview')}</button>
 
-      <h2>{t('quickLinks')}</h2>
+      <u><h2>{t('Quick Links')}</h2></u>
       <Link to="/login" className="btn btn-primary">{t('Login')}</Link>
+      <pre></pre>
       <Link to="/register" className="btn btn-secondary">{t('Register')}</Link>
     </div>
   );

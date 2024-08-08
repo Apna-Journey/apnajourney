@@ -1,6 +1,6 @@
 import { logError, displayErrorMessage } from './errorService';
 
-const API_URL = 'http://localhost:3000/api'; // Backend URL
+const API_URL = 'http://localhost:5000/api'; // Backend URL
 
 export async function apiRequest(endpoint, method = 'GET', data = null, isFormData = false) {
   try {
