@@ -29,7 +29,10 @@ app.use(express.urlencoded({ extended: true }));
 const upload = multer({ dest: 'uploads/' });
 
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/Apna Journey', { useNewUrlParser: true, useUnifiedTopology: true });
+const mongoURI = 'mongodb+srv://apnajourney:Ntdq0ANhqqKaiBSA@apnaj.noav4.mongodb.net/apnaj?retryWrites=true&w=majority&appName=apnaj';
+mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -119,4 +122,3 @@ app.get('/api/profiles/:id', async (req, res) => {
 server.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
