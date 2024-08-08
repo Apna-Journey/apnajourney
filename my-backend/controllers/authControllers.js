@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const jwt = require('jsonwebtoken');
+const User = require("../models/User");
+const jwt = require("jsonwebtoken");
 
 // Register
 const register = async (req, res) => {
@@ -9,24 +9,27 @@ const register = async (req, res) => {
     await newUser.save();
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json({ error: 'Error registering user' });
+    res.status(500).json({ error: "Error registering user" });
   }
 };
 
 // Login
 const login = async (req, res) => {
   try {
+    console.log("Inside the Login function inside the controller");
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
     if (!user || !(await user.comparePassword(password))) {
-      return res.status(400).json({ error: 'Invalid email or password' });
+      return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+    const token = jwt.sign({ id: user._id }, "your_jwt_secret", {
+      expiresIn: "1h",
+    });
     res.json({ token, user });
   } catch (error) {
-    res.status(500).json({ error: 'Error logging in' });
+    res.status(500).json({ error: "Error logging in" });
   }
 };
 
@@ -34,11 +37,11 @@ const login = async (req, res) => {
 const verifyEmail = async (req, res) => {
   try {
     const { token } = req.body;
-    const decoded = jwt.verify(token, 'your_jwt_secret');
+    const decoded = jwt.verify(token, "your_jwt_secret");
     const user = await User.findById(decoded.id);
     res.json({ user, token });
   } catch (error) {
-    res.status(400).json({ error: 'Invalid or expired token' });
+    res.status(400).json({ error: "Invalid or expired token" });
   }
 };
 

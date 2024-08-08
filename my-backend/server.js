@@ -1,18 +1,18 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const multer = require('multer');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const http = require('http');
-const socketio = require('socket.io');
+const express = require("express");
+const mongoose = require("mongoose");
+const multer = require("multer");
+const cors = require("cors");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const http = require("http");
+const socketio = require("socket.io");
 
-const User = require('./models/User');
-const Profile = require('./models/Profile');
-const authRoutes = require('./routes/authRoutes');
-const profileRoutes = require('./routes/profileRoutes');
-const notificationRoutes = require('./routes/notificationRoutes');
-const { authenticateToken } = require('./middleware/authMiddleware');
+const User = require("./models/User");
+const Profile = require("./models/Profile");
+const authRoutes = require("./routes/authRoutes");
+const profileRoutes = require("./routes/profileRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const { authenticateToken } = require("./middleware/authMiddleware");
 
 const app = express();
 const server = http.createServer(app);
@@ -26,95 +26,117 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // File upload configuration
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: "uploads/" });
 
 // MongoDB connection
-const mongoURI = 'mongodb+srv://apnajourney:Ntdq0ANhqqKaiBSA@apnaj.noav4.mongodb.net/apnaj?retryWrites=true&w=majority&appName=apnaj';
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const mongoURI =
+  "mongodb+srv://apnajourney:Ntdq0ANhqqKaiBSA@apnaj.noav4.mongodb.net/apnaj?retryWrites=true&w=majority&appName=apnaj";
+mongoose
+  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/profiles', authenticateToken, profileRoutes);
-app.use('/api/notifications', authenticateToken, notificationRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/profiles", authenticateToken, profileRoutes);
+app.use("/api/notifications", authenticateToken, notificationRoutes);
 
 // Socket.io setup
-io.on('connection', (socket) => {
-  console.log('New WebSocket connection');
+io.on("connection", (socket) => {
+  console.log("New WebSocket connection");
 
-  socket.on('disconnect', () => {
-    console.log('WebSocket disconnected');
+  socket.on("disconnect", () => {
+    console.log("WebSocket disconnected");
   });
 
   // Example of emitting an event
-  socket.emit('update', { message: 'Welcome to the WebSocket!' });
+  socket.emit("update", { message: "Welcome to the WebSocket!" });
 });
 
 // User registration
-app.post('/api/auth/register', async (req, res) => {
+app.post("/api/auth/register", async (req, res) => {
   const { email, password } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ email, password: hashedPassword });
     await user.save();
-    res.status(201).json({ message: 'User registered' });
+    res.status(201).json({ message: "User registered" });
   } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
+    res.status(500).json({ error: "Registration failed" });
   }
 });
 
 // User login
-app.post('/api/auth/login', async (req, res) => {
+app.post("/api/auth/login", async (req, res) => {
+  console.log("Inside the Login function");
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (user && await bcrypt.compare(password, user.password)) {
-      const token = jwt.sign({ userId: user._id }, 'your_jwt_secret', { expiresIn: '1h' });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = jwt.sign({ userId: user._id }, "your_jwt_secret", {
+        expiresIn: "1h",
+      });
       res.json({ token });
     } else {
-      res.status(401).json({ error: 'Invalid credentials' });
+      res.status(401).json({ error: "Invalid credentials" });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: "Login failed" });
   }
 });
 
 // Create profile
-app.post('/api/profiles', upload.single('logo'), async (req, res) => {
-  const { name, industry, description, foundedYear, employees, website, location } = req.body;
+app.post("/api/profiles", upload.single("logo"), async (req, res) => {
+  const {
+    name,
+    industry,
+    description,
+    foundedYear,
+    employees,
+    website,
+    location,
+  } = req.body;
   const logo = req.file ? req.file.path : null;
 
   try {
-    const profile = new Profile({ name, industry, description, foundedYear, employees, website, location, logo });
+    const profile = new Profile({
+      name,
+      industry,
+      description,
+      foundedYear,
+      employees,
+      website,
+      location,
+      logo,
+    });
     await profile.save();
     res.status(201).json(profile);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create profile' });
+    res.status(500).json({ error: "Failed to create profile" });
   }
 });
 
 // Get all profiles
-app.get('/api/profiles', async (req, res) => {
+app.get("/api/profiles", async (req, res) => {
   try {
     const profiles = await Profile.find();
     res.json(profiles);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch profiles' });
+    res.status(500).json({ error: "Failed to fetch profiles" });
   }
 });
 
 // Get profile by ID
-app.get('/api/profiles/:id', async (req, res) => {
+app.get("/api/profiles/:id", async (req, res) => {
   try {
     const profile = await Profile.findById(req.params.id);
     if (profile) {
       res.json(profile);
     } else {
-      res.status(404).json({ error: 'Profile not found' });
+      res.status(404).json({ error: "Profile not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch profile' });
+    res.status(500).json({ error: "Failed to fetch profile" });
   }
 });
 
