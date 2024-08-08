@@ -1,19 +1,16 @@
-//'mongodb+srv://apnajourney02:EfjPXjCP6otshvuD@cluster1.sjd1qsm.mongodb.net/?ssl=true&replicaSet=atlas-7vxsdi-shard-0&authSource=admin&retryWrites=true&w=majority'
+//mongodb+srv://apnajourney:Ntdq0ANhqqKaiBSA@apnaj.noav4.mongodb.net/?retryWrites=true&w=majority&appName=apnaj
 
 const { MongoClient } = require('mongodb');
 
-const uri = process.env.MONGODB_URI || 'mongodb+srv://apnajourney02:EfjPXjCP6otshvuD@cluster1.sjd1qsm.mongodb.net/?retryWrites=true&w=majority&appName=Cluster1';
-
+const uri = process.env.MONGODB_URI || 'mongodb+srv://apnajourney:Ntdq0ANhqqKaiBSA@apnaj.noav4.mongodb.net/?retryWrites=true&w=majority&appName=apnaj';
 let db;
 
 async function connectToMongoDB() {
-    const client = new MongoClient(uri, {
-        tlsAllowInvalidCertificates: true // For testing, remove in production
-    });
+    const client = new MongoClient(uri);
 
     try {
         await client.connect();
-        db = client.db('Apna Journey'); // Replace with your database name
+        db = client.db('apnaj'); 
         console.log('Connected to MongoDB');
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);

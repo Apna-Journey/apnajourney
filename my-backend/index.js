@@ -7,5 +7,5 @@ const PORT = 5000;
 connectToMongoDB();
 
 app.listen(PORT, () => {
-    console.log(`App is running on port ${PORT}`);
+    console.log(`App is running on port ${PORT}`);
 });
